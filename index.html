@@ -4,92 +4,101 @@
 <meta charset="UTF-8">
 <title>Web94</title>
 <style>
-  body, html {
-    margin: 0; padding: 0;
-    width: 100%; height: 100%;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background: #008080;
-    overflow: hidden;
-  }
+/* 基本 */
+body, html {
+  margin:0; padding:0;
+  width:100%; height:100%;
+  font-family:"Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow:hidden;
+  background:#008080;
+}
 
-  /* 共通 */
-  .hidden { display: none; }
+/* 共通 */
+.hidden { display:none; }
 
-  /* ブート画面 */
-  #boot {
-    width: 100%; height: 100%;
-    background: #000;
-    color: #0f0;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-  }
-  #boot h1 { font-size: 3em; margin-bottom: 50px; }
-  #progress {
-    width: 50%; height: 20px;
-    border: 2px solid #0f0;
-    position: relative;
-  }
-  #progress-bar {
-    height: 100%;
-    width: 0;
-    background: #0f0;
-  }
+/* ブート画面 */
+#boot {
+  width:100%; height:100%;
+  background:#000;
+  color:#0f0;
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  font-family:monospace;
+}
+#boot h1 { font-size:3em; margin-bottom:30px; }
+#boot-log { margin-bottom:20px; }
+#progress { width:50%; height:20px; border:2px solid #0f0; position:relative; }
+#progress-bar { height:100%; width:0; background:#0f0; }
 
-  /* ログイン画面 */
-  #login {
-    width: 100%; height: 100%;
-    background: #008080;
-    display: flex; justify-content: center; align-items: center;
-    flex-direction: column;
-  }
-  #login-box {
-    background: rgba(255,255,255,0.9);
-    padding: 20px; border-radius: 10px;
-    display: flex; flex-direction: column;
-    align-items: center;
-  }
-  #login-box input {
-    margin: 5px 0; padding: 5px;
-    width: 200px;
-  }
-  #login-box button {
-    margin-top: 10px; padding: 5px;
-    cursor: pointer;
-  }
+/* ログイン画面 */
+#login {
+  width:100%; height:100%;
+  display:flex; justify-content:center; align-items:center;
+  background:#008080;
+  flex-direction:column;
+}
+#login-box {
+  background: rgba(255,255,255,0.9);
+  padding:20px; border-radius:10px;
+  display:flex; flex-direction:column;
+  align-items:center;
+}
+#login-box input {
+  margin:5px 0; padding:5px; width:200px;
+}
+#login-box button {
+  margin-top:10px; padding:5px;
+  cursor:pointer;
+}
 
-  /* デスクトップ */
-  #desktop {
-    width: 100%; height: 100%;
-    position: relative;
-    display: none;
-  }
-  #taskbar {
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 100%; height: 40px;
-    background: #333;
-    color: white;
-    display: flex; align-items: center;
-  }
-  #start-button {
-    width: 80px; height: 100%;
-    background: #555; border: none; color: white;
-    cursor: pointer;
-  }
+/* デスクトップ */
+#desktop {
+  width:100%; height:100%;
+  position:relative;
+  display:none;
+  background:#008080;
+}
 
-  /* ウィンドウ */
-  .window {
-    position: absolute;
-    width: 300px; height: 200px;
-    background: #ddd; border: 2px solid #555;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
-    display: none; flex-direction: column;
-  }
-  .window-header {
-    background: #555; color: white; padding: 5px;
-    cursor: move; display: flex; justify-content: space-between;
-  }
-  .window-body { flex: 1; padding: 10px; }
+/* タスクバー */
+#taskbar {
+  position:absolute; bottom:0; left:0;
+  width:100%; height:40px;
+  background:#333;
+  color:white;
+  display:flex; align-items:center;
+}
+#start-button {
+  width:80px; height:100%;
+  background:#555; border:none; color:white;
+  cursor:pointer;
+}
+
+/* ウィンドウ */
+.window {
+  position:absolute;
+  width:300px; height:200px;
+  background:#ddd; border:2px solid #555;
+  box-shadow:2px 2px 10px rgba(0,0,0,0.5);
+  display:none; flex-direction:column;
+  animation: fadeIn 0.3s;
+}
+@keyframes fadeIn { from {opacity:0} to {opacity:1} }
+
+.window-header {
+  background:#555; color:white; padding:5px;
+  cursor:move; display:flex; justify-content:space-between;
+}
+.window-body { flex:1; padding:10px; }
+
+/* デスクトップアイコン */
+.icon {
+  width:60px; height:60px;
+  text-align:center; color:white;
+  cursor:pointer; margin:10px;
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center;
+}
+.icon img { width:40px; height:40px; margin-bottom:5px; }
 </style>
 </head>
 <body>
@@ -97,7 +106,9 @@
 <!-- ブート画面 -->
 <div id="boot">
   <h1>Web94</h1>
+  <div id="boot-log">Initializing...</div>
   <div id="progress"><div id="progress-bar"></div></div>
+  <audio id="boot-sound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
 </div>
 
 <!-- ログイン画面 -->
@@ -108,6 +119,7 @@
     <input type="password" id="password" placeholder="パスワード">
     <button onclick="login()">ログイン</button>
     <p id="error" style="color:red; display:none;">ユーザー名かパスワードが違います</p>
+    <audio id="login-sound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
   </div>
 </div>
 
@@ -115,6 +127,12 @@
 <div id="desktop">
   <div id="taskbar">
     <button id="start-button">Web94</button>
+  </div>
+
+  <!-- デスクトップアイコン -->
+  <div class="icon" id="icon-notepad" style="position:absolute;top:50px;left:50px;">
+    <img src="https://img.icons8.com/ios-filled/50/ffffff/notepad.png"/>
+    <span>メモ帳</span>
   </div>
 
   <!-- メモ帳ウィンドウ -->
@@ -129,35 +147,40 @@
 </div>
 
 <script>
+// 固定ログイン
+const USER='user';
+const PASS='1234';
+
+// ブート画面アニメーション
 const boot = document.getElementById('boot');
 const progressBar = document.getElementById('progress-bar');
-const loginScreen = document.getElementById('login');
-const desktop = document.getElementById('desktop');
+const bootLog = document.getElementById('boot-log');
+const bootSound = document.getElementById('boot-sound');
 
-const USER = 'user';
-const PASS = '1234';
-
-// ブートアニメーション
-let progress = 0;
-let bootInterval = setInterval(()=>{
-  progress += 2;
-  progressBar.style.width = progress + '%';
-  if(progress >= 100){
+let progress=0;
+bootSound.play();
+let bootInterval=setInterval(()=>{
+  progress+=2;
+  progressBar.style.width = progress+'%';
+  bootLog.textContent = `Booting Web94... ${progress}%`;
+  if(progress>=100){
     clearInterval(bootInterval);
     boot.classList.add('hidden');
-    loginScreen.classList.remove('hidden');
+    document.getElementById('login').classList.remove('hidden');
   }
-}, 50);
+},50);
 
 // ログイン処理
 function login(){
-  const u = document.getElementById('username').value;
-  const p = document.getElementById('password').value;
-  if(u === USER && p === PASS){
-    loginScreen.classList.add('hidden');
-    desktop.style.display = 'block';
+  const u=document.getElementById('username').value;
+  const p=document.getElementById('password').value;
+  const loginSound=document.getElementById('login-sound');
+  if(u===USER && p===PASS){
+    loginSound.play();
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('desktop').style.display='block';
   } else {
-    document.getElementById('error').style.display = 'block';
+    document.getElementById('error').style.display='block';
   }
 }
 
@@ -165,32 +188,36 @@ function login(){
 const startButton = document.getElementById('start-button');
 const myWindow = document.getElementById('myWindow');
 
-startButton.addEventListener('click', () => {
-  myWindow.style.display = myWindow.style.display === 'flex' ? 'none' : 'flex';
-  myWindow.style.left = '50px';
-  myWindow.style.top = '50px';
-});
-
-function closeWindow(id){
-  document.getElementById(id).style.display = 'none';
+function openWindow(id){ 
+  const w = document.getElementById(id);
+  w.style.display='flex';
+  w.style.left='50px';
+  w.style.top='50px';
 }
+function closeWindow(id){ document.getElementById(id).style.display='none'; }
 
-// ドラッグ機能
-let dragTarget = null, offsetX=0, offsetY=0;
-document.querySelectorAll('.window-header').forEach(header => {
-  header.addEventListener('mousedown', e => {
-    dragTarget = header.parentElement;
-    offsetX = e.clientX - dragTarget.offsetLeft;
-    offsetY = e.clientY - dragTarget.offsetTop;
+// スタートボタン
+startButton.addEventListener('click', ()=>openWindow('myWindow'));
+
+// アイコンクリック
+document.getElementById('icon-notepad').addEventListener('dblclick', ()=>openWindow('myWindow'));
+
+// ウィンドウドラッグ
+let dragTarget=null, offsetX=0, offsetY=0;
+document.querySelectorAll('.window-header').forEach(header=>{
+  header.addEventListener('mousedown', e=>{
+    dragTarget=header.parentElement;
+    offsetX=e.clientX-dragTarget.offsetLeft;
+    offsetY=e.clientY-dragTarget.offsetTop;
   });
 });
-document.addEventListener('mousemove', e => {
+document.addEventListener('mousemove', e=>{
   if(dragTarget){
-    dragTarget.style.left = e.clientX - offsetX + 'px';
-    dragTarget.style.top = e.clientY - offsetY + 'px';
+    dragTarget.style.left = e.clientX-offsetX+'px';
+    dragTarget.style.top = e.clientY-offsetY+'px';
   }
 });
-document.addEventListener('mouseup', () => dragTarget = null);
+document.addEventListener('mouseup', ()=>dragTarget=null);
 </script>
 
 </body>
